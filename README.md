@@ -65,6 +65,29 @@ The effects are small, but the direction is consistent: more GPUs and CPUs sligh
 * **Validate graphs without ground truth.** Falsification testing caught a bad variable that would otherwise have distorted effect estimates.
 * **Causal graphs don't transfer across systems.** MIT and Theta log different features (Theta has no GPU fields), so each system needs its own graph.
 
+## What I learned about causal inference
+
+This course and project changed how I think about data. Most of my earlier ML work was about prediction: finding patterns that correlate with an outcome. Causal inference asks a different question: what would happen if we *changed* something? These are the main ideas I now understand and can apply.
+
+**Correlation vs. causation, formally.** I learned the potential outcomes framework, where the causal effect of a treatment is the difference between outcomes that can never both be observed for the same unit, E[Y(1) - Y(0)]. The core challenge is identification: turning that unobservable quantity into something we can estimate from observational data, under clearly stated assumptions.
+
+**Causal graphs as a language for assumptions.** DAGs make assumptions explicit and testable. I learned how conditional independence relates to graph structure through the Markov condition and faithfulness, why confounders create spurious associations, and why an intervention, do(X = x), is different from simply observing X = x.
+
+**Causal discovery: learning the graph from data.** I worked with the three main families of structure learning algorithms and their trade-offs:
+* **Constraint-based** methods (PC, FCI) build the graph from conditional independence tests. PC assumes no hidden confounders and returns an equivalence class (CPDAG), while FCI allows for hidden confounders and returns a PAG, which is more honest but often leaves edge directions unresolved.
+* **Score-based** methods (GES) search for the graph that best balances fit and complexity, using scores like BIC or BDeu.
+* **Functional and optimization-based** methods (LiNGAM, additive noise models, PNL, NOTEARS) use non-Gaussianity, nonlinearity, or continuous optimization to identify edge directions that independence tests alone cannot.
+
+**Assumptions matter as much as algorithms.** The choice of conditional independence test (G², Fisher-Z, Pillai trace), how variables are represented (discrete vs. continuous), and whether the data are linear or Gaussian can change the learned graph completely. Real-world data breaks textbook assumptions, so knowing which assumption each method relies on is essential.
+
+**Validating a graph without ground truth.** In practice there is no true DAG to compare against. I learned how falsification tests, such as comparing a graph's violations of conditional independence against randomly permuted graphs, can show whether a learned structure is at least consistent with the data before it is used for decisions.
+
+**Estimating causal effects.** Once a graph is in place, the next step is estimating how much an intervention changes the outcome. I studied regression adjustment, propensity score matching, inverse probability weighting, instrumental variables, and quasi-experimental designs like difference-in-differences and regression discontinuity, along with the assumptions each one needs.
+
+**Tools.** causal-learn (PC, FCI, GES, PNL), DoWhy and its graphical causal model API (falsification, fitting causal mechanisms, average causal effects), CausalNex (NOTEARS), and pgmpy.
+
+**My main takeaway:** causal claims are only as strong as the assumptions behind them. A good causal analysis states those assumptions, tests them where possible, and is honest about what the data cannot tell us.
+
 ## Repository structure
 
 ```
